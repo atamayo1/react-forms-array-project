@@ -1,5 +1,7 @@
 # React + Vite
 
+it's a react project with the options to add new forms and save the data , and get the data from an api or array to edit the data that we receive for every form on the list of forms
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
