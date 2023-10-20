@@ -7,37 +7,44 @@ const initialFriendsData = [
     firstName: "John",
     lastName: "Doe",
     country: "USA",
-    city: "New York"
+    city: "New York",
   },
   {
     id: 2,
     firstName: "Jane",
     lastName: "Smith",
     country: "Canada",
-    city: "Toronto"
-  }
+    city: "Toronto",
+  },
   // Agrega otros amigos aquí...
 ];
 
 const countriesData = [
   { id: 1, name: "USA" },
-  { id: 2, name: "Canada" }
+  { id: 2, name: "Canada" },
   // Agrega otros países aquí...
 ];
 
 const citiesData = {
-  1: [
+  USA: [
     { id: 1, name: "New York" },
-    { id: 2, name: "Los Angeles" }
+    { id: 2, name: "Los Angeles" },
     // Otras ciudades de USA...
   ],
-  2: [
+  Canada: [
     { id: 1, name: "Toronto" },
-    { id: 2, name: "Vancouver" }
+    { id: 2, name: "Vancouver" },
     // Otras ciudades de Canadá...
-  ]
+  ],
   // Agrega otras ciudades para otros países aquí...
 };
+
+const fields = [
+  { name: "firstName", label: "First Name", type: "text" },
+  { name: "lastName", label: "Last Name", type: "text" },
+  { name: "country", label: "Country", type: "select", options: countriesData },
+  { name: "city", label: "City", type: "select", options: citiesData },
+];
 
 function App() {
   const [friends, setFriends] = useState(initialFriendsData);
@@ -45,7 +52,7 @@ function App() {
     firstName: "",
     lastName: "",
     country: "",
-    city: ""
+    city: "",
   });
 
   const onSubmit = (friendId) => {
@@ -64,14 +71,14 @@ function App() {
       firstName: "",
       lastName: "",
       country: "",
-      city: ""
+      city: "",
     });
   };
 
   const addFriend = () => {
     const newFriend = {
       id: friends.length + 1,
-      ...formData
+      ...formData,
     };
     setFriends((prevFriends) => [...prevFriends, newFriend]);
   };
@@ -87,103 +94,75 @@ function App() {
       firstName: friend.firstName,
       lastName: friend.lastName,
       country: friend.country,
-      city: friend.city
+      city: friend.city,
     });
   };
 
   return (
     <>
       <div className="form">
-        {friends.map((friend) => {
-          const fieldName = `friends[${friend.id}]`;
-          return (
-            <div key={friend.id}>
-              <label>
-                First Name:
-                <input
-                  type="text"
-                  name={`${fieldName}.firstName`}
-                  value={formData.firstName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, firstName: e.target.value })
-                  }
-                  placeholder="First Name"
-                />
-              </label>
-
-              <label>
-                Last Name:
-                <input
-                  type="text"
-                  name={`${fieldName}.lastName`}
-                  value={formData.lastName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lastName: e.target.value })
-                  }
-                  placeholder="Last Name"
-                />
-              </label>
-
-              <label>
-                Country:
-                <select
-                  name={`${fieldName}.country`}
-                  value={formData.country}
-                  onChange={(e) =>
-                    setFormData({ ...formData, country: e.target.value })
-                  }
-                  className="custom-select"
-                >
-                  <option value="">Select Country</option>
-                  {countriesData.map((country) => (
-                    <option key={country.id} value={country.name}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              {formData.country && (
+        {friends.map((friend) => (
+          <div key={friend.id}>
+            {fields.map((field, index) => (
+              <div key={index}>
                 <label>
-                  City:
-                  <select
-                    name={`${fieldName}.city`}
-                    value={formData.city}
-                    onChange={(e) =>
-                      setFormData({ ...formData, city: e.target.value })
-                    }
-                    className="custom-select"
-                  >
-                    <option value="">Select City</option>
-                    {citiesData[formData.country].map((city) => (
-                      <option key={city.id} value={city.name}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
+                  {field.label}:
+                  {field.type === "select" && Array.isArray(field.options) && (
+                    <select
+                      name={field.name}
+                      value={formData[field.name]}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [field.name]: e.target.value,
+                        })
+                      }
+                      className="custom-select"
+                    >
+                      <option value="">Select {field.label}</option>
+                      {field.options.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  {field.type === "text" && (
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      value={formData[field.name]}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [field.name]: e.target.value,
+                        })
+                      }
+                      placeholder={`Enter ${field.label}`}
+                    />
+                  )}
                 </label>
-        )}
-
-              <button type="button" onClick={removeFriend(friend.id)}>
-                Remove
-              </button>
-              <button
-                type="button"
-                onClick={() => onSubmit(friend.id)}
-                className="custom-button"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => handleEditClick(friend)}
-                className="custom-button"
-              >
-                Edit
-              </button>
-            </div>
-          );
-        })}
+              </div>
+            ))}
+            <button type="button" onClick={removeFriend(friend.id)}>
+              Remove
+            </button>
+            <button
+              type="button"
+              onClick={() => onSubmit(friend.id)}
+              className="custom-button"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => handleEditClick(friend)}
+              className="custom-button"
+            >
+              Edit
+            </button>
+          </div>
+        ))}
         <button type="button" onClick={addFriend} className="custom-button">
           Add Friend
         </button>
